@@ -1,4 +1,4 @@
-# malltest
+# mall2
 
 ## Project setup
 ```
