@@ -1,6 +1,8 @@
 <template>
   <div id="home">
     <nav-bar class="home-nav"><div slot="center">购物街</div></nav-bar>
+    
+    <scroll class="content" ref="scroll">
     <home-swiper :banners="banners"/>
     <recommend-view :recommends="recommends"/>
     <feature-view/>
@@ -8,6 +10,8 @@
                  :titles="['流行', '新款', '精选']"
                  @tabClick="tabClick"/>
     <goods-list :goods="showGoods"/>
+    </scroll>
+    <back-top @click.native="backClick"/>
     
   </div>
 </template>
@@ -20,8 +24,12 @@ import FeatureView from './childComps/FeatureView'
 import NavBar from 'components/common/navbar/NavBar';
 import TabControl from 'components/content/tabControl/TabControl';
 import GoodsList from 'components/content/goods/GoodsList';
+import Scroll from 'components/common/scroll/Scroll';
+import BackTop from 'components/content/backTop/BackTop';
 
 import {getHomeMultidata,getHomeGoods} from "network/home";
+
+
 
 export default {
   name:"Home",
@@ -32,6 +40,8 @@ export default {
     NavBar,
     TabControl,
     GoodsList,
+    Scroll,
+    BackTop,
 
   },
   data() {
@@ -70,9 +80,11 @@ export default {
         case 2:
           this.currentType = 'sell'
           break
-      }
+      }   
     },
-
+    backClick() {
+      this.$refs.scroll.scrollTo(0,0);
+    },
     getHomeMultidata(){
         getHomeMultidata().then(res => {
           this.banners = res.data.banner.list;
@@ -92,9 +104,11 @@ export default {
 }
 </script>
 
-<style>
+<style scoped>
   #home{
     padding-top: 44px;
+    height: 100vh;
+    position: relative;
   }
   .home-nav{
     background-color: var(--color-tint);
@@ -110,5 +124,14 @@ export default {
     position: sticky;
     top: 44px;
     z-index: 9;
+  }
+  .content{
+    /* height: 300px; */
+    overflow: hidden;
+    position: absolute;
+    top: 44px;
+    bottom: 49px;
+    left: 0;
+    right: 0;
   }
 </style>
