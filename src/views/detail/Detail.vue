@@ -1,7 +1,7 @@
 <template>
   <div id="detail">
-    <detail-nav-bar class="detail-nav" @titleClick="titleClick"/>
-    <scroll class="content" ref="scroll">
+    <detail-nav-bar class="detail-nav" @titleClick="titleClick" ref="nav"/>
+    <scroll class="content" ref="scroll" :probe-type="3" @scroll="contentScroll">
       <detail-swiper :top-images="topImages"/>
       <detail-base-info :goods="goods"/>
       <detail-shop-info :shop="shop"/>
@@ -10,7 +10,7 @@
       <detail-comment-info ref="comment" :comment-info="commentInfo"/>
       <goods-list ref="recommend" :goods="recommends"/>
     </scroll>
-    
+    <detail-bottom-bar/>
   </div>
 </template>
 
@@ -28,14 +28,14 @@ import DetailCommentInfo from './childComps/DetailCommentInfo.vue'
 import GoodsList from 'components/content/goods/GoodsList.vue'
 import {debounce} from 'common/utils'
 import {itemListenerMixin} from 'common/mixin'
+import DetailBottomBar from './childComps/DetailBottomBar.vue'
 
 
 
 export default {
   components: { DetailNavBar,DetailSwiper,DetailBaseInfo, DetailShopInfo, Scroll,
-                DetailGoodsInfo, DetailParamInfo,
-    DetailCommentInfo,
-    GoodsList, },
+                DetailGoodsInfo, DetailParamInfo, DetailCommentInfo, GoodsList, 
+                DetailBottomBar,  },
   name: "Detail",
   mixins: [itemListenerMixin],
   data() {
@@ -50,7 +50,8 @@ export default {
       recommends: [],
       themeTopYs: [],
       getThemeTopY: null,
-      itemImgListener: null
+      itemImgListener: null,
+      currentIndex: 0
       
     }
   },
@@ -60,6 +61,17 @@ export default {
     },
     titleClick(index) {
        this.$refs.scroll.scrollTo(0, -this.themeTopYs[index], 200)
+    },
+    contentScroll(position) {
+      const positionY = -position.y
+      let length = this.themeTopYs.length
+      for(let i = 0; i < length; i++) {
+        if (this.currentIndex !== i && (i < length - 1 && positionY >= this.themeTopYs[i] && positionY < this.themeTopYs[i+1]) 
+        || (i === length - 1 && positionY >= this.themeTopYs[i])) {
+          this.currentIndex = i
+          this.$refs.nav.currentIndex = this.currentIndex
+        }
+      }
     }
   },
   mounted() {
@@ -127,6 +139,6 @@ export default {
     background: #fff;
   }
   .content{
-    height: calc(100% - 44px);
+    height: calc(100% - 44px - 49px);
   }
 </style>
