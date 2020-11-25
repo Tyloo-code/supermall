@@ -11,6 +11,7 @@
       <goods-list ref="recommend" :goods="recommends"/>
     </scroll>
     <detail-bottom-bar/>
+    <back-top @click.native="backClick" v-show="isShowBackTop" />
   </div>
 </template>
 
@@ -29,13 +30,15 @@ import GoodsList from 'components/content/goods/GoodsList.vue'
 import {debounce} from 'common/utils'
 import {itemListenerMixin} from 'common/mixin'
 import DetailBottomBar from './childComps/DetailBottomBar.vue'
+import BackTop from 'components/content/backTop/BackTop.vue'
+
 
 
 
 export default {
   components: { DetailNavBar,DetailSwiper,DetailBaseInfo, DetailShopInfo, Scroll,
                 DetailGoodsInfo, DetailParamInfo, DetailCommentInfo, GoodsList, 
-                DetailBottomBar,  },
+                DetailBottomBar, BackTop,  },
   name: "Detail",
   mixins: [itemListenerMixin],
   data() {
@@ -51,7 +54,8 @@ export default {
       themeTopYs: [],
       getThemeTopY: null,
       itemImgListener: null,
-      currentIndex: 0
+      currentIndex: 0,
+      isShowBackTop: false,
       
     }
   },
@@ -61,6 +65,9 @@ export default {
     },
     titleClick(index) {
        this.$refs.scroll.scrollTo(0, -this.themeTopYs[index], 200)
+    },
+     backClick() {
+      this.$refs.scroll.scrollTo(0, 0);
     },
     contentScroll(position) {
       const positionY = -position.y
@@ -72,6 +79,7 @@ export default {
           this.$refs.nav.currentIndex = this.currentIndex
         }
       }
+      this.isShowBackTop = (-position.y) > 1000
     }
   },
   mounted() {
