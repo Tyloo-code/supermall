@@ -10,7 +10,7 @@
       <detail-comment-info ref="comment" :comment-info="commentInfo"/>
       <goods-list ref="recommend" :goods="recommends"/>
     </scroll>
-    <detail-bottom-bar/>
+    <detail-bottom-bar @addToCart="addToCart"/>
     <back-top @click.native="backClick" v-show="isShowBackTop" />
   </div>
 </template>
@@ -80,6 +80,17 @@ export default {
         }
       }
       this.isShowBackTop = (-position.y) > 1000
+    },
+    addToCart() {
+      const product = {}
+      product.image = this.topImages[0]
+      product.title = this.goods.title
+      product.desc = this.goods.desc
+      product.price = this.goods.realPrice
+      product.iid = this.iid
+
+      // this.$store.commit('addCart',product)
+      this.$store.dispatch('addCart',product)
     }
   },
   mounted() {
@@ -115,14 +126,6 @@ export default {
         this.commentInfo = data.rate.list[0]
       }   
 
-    //   this.$nextTick( () => {
-    //     this.themeTopYs = []
-    //     this.themeTopYs.push(0)
-    //     this.themeTopYs.push(this.$refs.params.$el.offsetTop)
-    //     this.themeTopYs.push(this.$refs.comment.$el.offsetTop)
-    //     this.themeTopYs.push(this.$refs.recommend.$el.offsetTop)
-    // })
-   
     })
     getRecommend().then(res => {
       this.recommends = res.data.list
@@ -148,5 +151,7 @@ export default {
   }
   .content{
     height: calc(100% - 44px - 49px);
+    overflow: hidden;
+    width: 100%;
   }
 </style>
